@@ -7,3 +7,4 @@ restartPolicyMaxRetries = 10
 
 [env]
 NODE_ENV = "production"
+REACT_APP_API_URL = "https://protective-hope-production-2c27.up.railway.app"
