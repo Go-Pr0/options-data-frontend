@@ -8,9 +8,17 @@ import TimeRangeSelector from './components/TimeRangeSelector';
 import LatestData from './components/LatestData';
 import PriceChart from './components/PriceChart';
 import IVChart from './components/IVChart';
+import ApiDebug from './components/ApiDebug';
 import './App.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+// Debug: Log the API URL being used
+console.log('🔗 Frontend API URL:', API_BASE_URL);
+console.log('🔗 Environment variables:', {
+  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+  NODE_ENV: process.env.NODE_ENV
+});
 
 function AppContent() {
   const [chartData, setChartData] = useState({ price_data: [], iv_data: [] });
@@ -99,6 +107,7 @@ function AppContent() {
 
   return (
     <div className="app">
+      <ApiDebug />
       <Header 
         lastUpdate={lastUpdate}
         systemStatus={systemStatus}
