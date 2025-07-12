@@ -1,0 +1,335 @@
+/* App.css */
+.App {
+  text-align: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  min-height: 100vh;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.App-header {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.App-header p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.last-update {
+  font-size: 0.9rem !important;
+  opacity: 0.7 !important;
+  margin-top: 5px !important;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid #fff;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-top: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-banner {
+  background: rgba(220, 53, 69, 0.9);
+  color: white;
+  padding: 15px;
+  margin: 20px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.time-range-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-range-selector label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.time-range-selector button {
+  padding: 8px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.time-range-selector button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.time-range-selector button.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1e3c72;
+  border-color: white;
+  font-weight: 600;
+}
+
+.refresh-btn {
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.latest-data {
+  margin: 20px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.latest-data h3 {
+  margin-top: 0;
+  color: #ffd700;
+  font-size: 1.3rem;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.data-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.data-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.data-card h4 {
+  margin: 0 0 10px 0;
+  color: #ffd700;
+  font-size: 1.1rem;
+}
+
+.data-card p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.data-card .highlight {
+  font-weight: 600;
+  color: #00ff88;
+}
+
+.charts-container {
+  margin: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+.chart-section {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 25px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chart-section h2 {
+  margin-top: 0;
+  color: #ffd700;
+  font-size: 1.5rem;
+}
+
+.chart-description {
+  margin-bottom: 20px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.chart-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.info-section {
+  margin: 20px;
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  text-align: left;
+}
+
+.info-section h3 {
+  text-align: center;
+  color: #ffd700;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+}
+
+.moneyness-explanation {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.moneyness-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #ffd700;
+}
+
+.moneyness-item strong {
+  color: #ffd700;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.data-info {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.data-info p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.App-footer {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.App-footer a {
+  color: #ffd700;
+  text-decoration: none;
+}
+
+.App-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .App-header h1 {
+    font-size: 2rem;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .time-range-selector {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .data-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .moneyness-explanation {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-section {
+    padding: 15px;
+  }
+}
+
+/* Chart specific styles */
+.recharts-wrapper {
+  margin: 0 auto;
+}
+
+.recharts-cartesian-axis-tick-value {
+  font-size: 12px;
+}
+
+.recharts-legend-wrapper {
+  padding-top: 20px;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.no-data-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  display: block;
+}
