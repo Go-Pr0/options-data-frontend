@@ -14,11 +14,12 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Install serve globally
-RUN npm install -g serve
+# Copy and make startup script executable
+COPY start.sh ./
+RUN chmod +x start.sh
 
-# Expose port
+# Expose port (Railway will set the actual port via PORT env var)
 EXPOSE 3000
 
-# Start the application
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Start the application with dynamic port
+CMD ["./start.sh"]
