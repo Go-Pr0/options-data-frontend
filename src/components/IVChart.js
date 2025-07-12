@@ -10,14 +10,18 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
+import { useTheme } from '../contexts/ThemeContext';
 
 const IVChart = ({ data }) => {
+  const { isDark } = useTheme();
+
   if (!data || data.length === 0) {
     return (
       <div className="chart-container">
-        <div className="no-data">
-          <span className="no-data-icon">📈</span>
-          <p>No IV data available yet. Data collection in progress...</p>
+        <div className="empty-state">
+          <div className="empty-icon">📈</div>
+          <h4 className="empty-message">No IV data available</h4>
+          <p className="empty-description">Data collection in progress...</p>
         </div>
       </div>
     );
@@ -57,37 +61,65 @@ const IVChart = ({ data }) => {
     new Date(a.timestamp) - new Date(b.timestamp)
   );
 
+  // Theme-aware colors
+  const colors = {
+    spot: isDark ? '#d4af37' : '#c19b2e',
+    itm: isDark ? '#90c695' : '#27ae60',
+    atm: isDark ? '#e6c068' : '#f39c12',
+    otm: isDark ? '#7db3d3' : '#3498db',
+    grid: isDark ? 'rgba(245, 245, 220, 0.1)' : 'rgba(44, 62, 80, 0.1)',
+    text: isDark ? '#d0d0d0' : '#34495e'
+  };
+
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          color: 'white'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{data.time}</p>
-          <p style={{ margin: '2px 0', color: '#8884d8' }}>
-            BTC Spot: ${data.spot_price?.toLocaleString()}
-          </p>
-          {data.itm_iv && (
-            <p style={{ margin: '2px 0', color: '#82ca9d' }}>
-              ITM IV: {data.itm_iv.toFixed(2)}%
-            </p>
-          )}
-          {data.atm_iv && (
-            <p style={{ margin: '2px 0', color: '#ffc658' }}>
-              ATM IV: {data.atm_iv.toFixed(2)}%
-            </p>
-          )}
-          {data.otm_iv && (
-            <p style={{ margin: '2px 0', color: '#ff7300' }}>
-              OTM IV: {data.otm_iv.toFixed(2)}%
-            </p>
-          )}
+        <div className="chart-tooltip">
+          <div className="tooltip-header">
+            <span className="tooltip-time">{data.time}</span>
+          </div>
+          <div className="tooltip-content">
+            <div className="tooltip-item">
+              <span className="tooltip-label" style={{ color: colors.spot }}>
+                BTC Spot:
+              </span>
+              <span className="tooltip-value">
+                ${data.spot_price?.toLocaleString()}
+              </span>
+            </div>
+            {data.itm_iv && (
+              <div className="tooltip-item">
+                <span className="tooltip-label" style={{ color: colors.itm }}>
+                  ITM IV:
+                </span>
+                <span className="tooltip-value">
+                  {data.itm_iv.toFixed(2)}%
+                </span>
+              </div>
+            )}
+            {data.atm_iv && (
+              <div className="tooltip-item">
+                <span className="tooltip-label" style={{ color: colors.atm }}>
+                  ATM IV:
+                </span>
+                <span className="tooltip-value">
+                  {data.atm_iv.toFixed(2)}%
+                </span>
+              </div>
+            )}
+            {data.otm_iv && (
+              <div className="tooltip-item">
+                <span className="tooltip-label" style={{ color: colors.otm }}>
+                  OTM IV:
+                </span>
+                <span className="tooltip-value">
+                  {data.otm_iv.toFixed(2)}%
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       );
     }
@@ -117,56 +149,67 @@ const IVChart = ({ data }) => {
   return (
     <div className="chart-container">
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={normalizedSpotData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+        <LineChart data={normalizedSpotData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke={colors.grid}
+            opacity={0.5}
+          />
           <XAxis 
             dataKey="time" 
-            stroke="#666"
+            stroke={colors.text}
             fontSize={12}
             interval="preserveStartEnd"
+            tick={{ fill: colors.text }}
           />
           <YAxis 
-            stroke="#666"
+            stroke={colors.text}
             fontSize={12}
             tickFormatter={(value) => `${value.toFixed(1)}%`}
+            tick={{ fill: colors.text }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend 
+            wrapperStyle={{ color: colors.text }}
+          />
           
           {/* IV lines */}
           <Line
             type="monotone"
             dataKey="itm_iv"
-            stroke="#82ca9d"
+            stroke={colors.itm}
             strokeWidth={2}
             dot={false}
             name="5% ITM Call IV"
             connectNulls={false}
+            activeDot={{ r: 4, fill: colors.itm }}
           />
           <Line
             type="monotone"
             dataKey="atm_iv"
-            stroke="#ffc658"
+            stroke={colors.atm}
             strokeWidth={2}
             dot={false}
             name="ATM Call IV"
             connectNulls={false}
+            activeDot={{ r: 4, fill: colors.atm }}
           />
           <Line
             type="monotone"
             dataKey="otm_iv"
-            stroke="#ff7300"
+            stroke={colors.otm}
             strokeWidth={2}
             dot={false}
             name="5% OTM Call IV"
             connectNulls={false}
+            activeDot={{ r: 4, fill: colors.otm }}
           />
           
           {/* Normalized spot price overlay */}
           <Line
             type="monotone"
             dataKey="normalized_spot"
-            stroke="#8884d8"
+            stroke={colors.spot}
             strokeWidth={1}
             strokeDasharray="5 5"
             dot={false}
@@ -178,27 +221,35 @@ const IVChart = ({ data }) => {
           {avgIV > 0 && (
             <ReferenceLine 
               y={avgIV} 
-              stroke="#666" 
+              stroke={colors.text} 
               strokeDasharray="3 3" 
-              strokeOpacity={0.5}
-              label={{ value: `Avg IV: ${avgIV.toFixed(1)}%`, position: "topRight" }}
+              strokeOpacity={0.3}
             />
           )}
         </LineChart>
       </ResponsiveContainer>
       
-      <div style={{ 
-        marginTop: '15px', 
-        fontSize: '0.9rem', 
-        color: '#666',
-        textAlign: 'center'
-      }}>
-        <p>
-          📊 <strong>Implied Volatility (IV):</strong> Market's expectation of future price movement
-        </p>
-        <p>
-          💡 <strong>Higher IV = Higher option premiums</strong> | 
-          📈 <strong>Dashed line:</strong> Normalized BTC price for correlation analysis
+      <div className="chart-info">
+        <div className="chart-legend">
+          <div className="legend-item">
+            <span className="legend-color" style={{ backgroundColor: colors.atm }}></span>
+            <span className="legend-text">Implied Volatility (%)</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-color" style={{ backgroundColor: colors.spot }}></span>
+            <span className="legend-text">BTC Price (normalized)</span>
+          </div>
+        </div>
+        <div className="chart-metrics">
+          {avgIV > 0 && (
+            <div className="metric">
+              <span className="metric-label">Average IV:</span>
+              <span className="metric-value">{avgIV.toFixed(2)}%</span>
+            </div>
+          )}
+        </div>
+        <p className="chart-description">
+          Higher IV indicates higher option premiums and market uncertainty
         </p>
       </div>
     </div>

@@ -10,14 +10,18 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
+import { useTheme } from '../contexts/ThemeContext';
 
 const PriceChart = ({ data }) => {
+  const { isDark } = useTheme();
+
   if (!data || data.length === 0) {
     return (
       <div className="chart-container">
-        <div className="no-data">
-          <span className="no-data-icon">📊</span>
-          <p>No price data available yet. Data collection in progress...</p>
+        <div className="empty-state">
+          <div className="empty-icon">📊</div>
+          <h4 className="empty-message">No price data available</h4>
+          <p className="empty-description">Data collection in progress...</p>
         </div>
       </div>
     );
@@ -57,37 +61,65 @@ const PriceChart = ({ data }) => {
     new Date(a.timestamp) - new Date(b.timestamp)
   );
 
-  // Custom tooltip to show both spot price and option premiums
+  // Theme-aware colors
+  const colors = {
+    spot: isDark ? '#d4af37' : '#c19b2e',
+    itm: isDark ? '#90c695' : '#27ae60',
+    atm: isDark ? '#e6c068' : '#f39c12',
+    otm: isDark ? '#7db3d3' : '#3498db',
+    grid: isDark ? 'rgba(245, 245, 220, 0.1)' : 'rgba(44, 62, 80, 0.1)',
+    text: isDark ? '#d0d0d0' : '#34495e'
+  };
+
+  // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          color: 'white'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{data.time}</p>
-          <p style={{ margin: '2px 0', color: '#8884d8' }}>
-            BTC Spot: ${data.spot_price?.toLocaleString()}
-          </p>
-          {data.itm_premium && (
-            <p style={{ margin: '2px 0', color: '#82ca9d' }}>
-              ITM Call: ${data.itm_premium.toFixed(4)}
-            </p>
-          )}
-          {data.atm_premium && (
-            <p style={{ margin: '2px 0', color: '#ffc658' }}>
-              ATM Call: ${data.atm_premium.toFixed(4)}
-            </p>
-          )}
-          {data.otm_premium && (
-            <p style={{ margin: '2px 0', color: '#ff7300' }}>
-              OTM Call: ${data.otm_premium.toFixed(4)}
-            </p>
-          )}
+        <div className="chart-tooltip">
+          <div className="tooltip-header">
+            <span className="tooltip-time">{data.time}</span>
+          </div>
+          <div className="tooltip-content">
+            <div className="tooltip-item">
+              <span className="tooltip-label" style={{ color: colors.spot }}>
+                BTC Spot:
+              </span>
+              <span className="tooltip-value">
+                ${data.spot_price?.toLocaleString()}
+              </span>
+            </div>
+            {data.itm_premium && (
+              <div className="tooltip-item">
+                <span className="tooltip-label" style={{ color: colors.itm }}>
+                  ITM Call:
+                </span>
+                <span className="tooltip-value">
+                  ${data.itm_premium.toFixed(4)}
+                </span>
+              </div>
+            )}
+            {data.atm_premium && (
+              <div className="tooltip-item">
+                <span className="tooltip-label" style={{ color: colors.atm }}>
+                  ATM Call:
+                </span>
+                <span className="tooltip-value">
+                  ${data.atm_premium.toFixed(4)}
+                </span>
+              </div>
+            )}
+            {data.otm_premium && (
+              <div className="tooltip-item">
+                <span className="tooltip-label" style={{ color: colors.otm }}>
+                  OTM Call:
+                </span>
+                <span className="tooltip-value">
+                  ${data.otm_premium.toFixed(4)}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       );
     }
@@ -100,49 +132,59 @@ const PriceChart = ({ data }) => {
   return (
     <div className="chart-container">
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+        <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke={colors.grid}
+            opacity={0.5}
+          />
           <XAxis 
             dataKey="time" 
-            stroke="#666"
+            stroke={colors.text}
             fontSize={12}
             interval="preserveStartEnd"
+            tick={{ fill: colors.text }}
           />
           <YAxis 
             yAxisId="spot"
             orientation="left"
-            stroke="#8884d8"
+            stroke={colors.spot}
             fontSize={12}
             tickFormatter={(value) => `$${value.toLocaleString()}`}
+            tick={{ fill: colors.text }}
           />
           <YAxis 
             yAxisId="premium"
             orientation="right"
-            stroke="#82ca9d"
+            stroke={colors.itm}
             fontSize={12}
             tickFormatter={(value) => `$${value.toFixed(3)}`}
+            tick={{ fill: colors.text }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend 
+            wrapperStyle={{ color: colors.text }}
+          />
           
           {/* Spot price line */}
           <Line
             yAxisId="spot"
             type="monotone"
             dataKey="spot_price"
-            stroke="#8884d8"
+            stroke={colors.spot}
             strokeWidth={3}
             dot={false}
             name="BTC Spot Price"
+            activeDot={{ r: 6, fill: colors.spot }}
           />
           
           {/* Reference line for average spot price */}
           <ReferenceLine 
             yAxisId="spot"
             y={avgSpotPrice} 
-            stroke="#8884d8" 
+            stroke={colors.spot} 
             strokeDasharray="5 5" 
-            strokeOpacity={0.5}
+            strokeOpacity={0.3}
           />
           
           {/* Option premium lines */}
@@ -150,47 +192,51 @@ const PriceChart = ({ data }) => {
             yAxisId="premium"
             type="monotone"
             dataKey="itm_premium"
-            stroke="#82ca9d"
+            stroke={colors.itm}
             strokeWidth={2}
             dot={false}
             name="5% ITM Call"
             connectNulls={false}
+            activeDot={{ r: 4, fill: colors.itm }}
           />
           <Line
             yAxisId="premium"
             type="monotone"
             dataKey="atm_premium"
-            stroke="#ffc658"
+            stroke={colors.atm}
             strokeWidth={2}
             dot={false}
             name="ATM Call"
             connectNulls={false}
+            activeDot={{ r: 4, fill: colors.atm }}
           />
           <Line
             yAxisId="premium"
             type="monotone"
             dataKey="otm_premium"
-            stroke="#ff7300"
+            stroke={colors.otm}
             strokeWidth={2}
             dot={false}
             name="5% OTM Call"
             connectNulls={false}
+            activeDot={{ r: 4, fill: colors.otm }}
           />
         </LineChart>
       </ResponsiveContainer>
       
-      <div style={{ 
-        marginTop: '15px', 
-        fontSize: '0.9rem', 
-        color: '#666',
-        textAlign: 'center'
-      }}>
-        <p>
-          📈 <strong>Left Y-axis:</strong> BTC Spot Price (USD) | 
-          📊 <strong>Right Y-axis:</strong> Option Premiums (USD)
-        </p>
-        <p>
-          💡 <strong>Tip:</strong> Watch how option premiums move relative to spot price changes
+      <div className="chart-info">
+        <div className="chart-legend">
+          <div className="legend-item">
+            <span className="legend-color" style={{ backgroundColor: colors.spot }}></span>
+            <span className="legend-text">BTC Spot Price (Left Axis)</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-color" style={{ backgroundColor: colors.itm }}></span>
+            <span className="legend-text">Option Premiums (Right Axis)</span>
+          </div>
+        </div>
+        <p className="chart-description">
+          Watch how option premiums move relative to spot price changes
         </p>
       </div>
     </div>
